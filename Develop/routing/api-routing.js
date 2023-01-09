@@ -24,7 +24,7 @@ router.get("/notes", (req, res) => {
 });
 
 // create a post route to add notes to the DB
-router.post("/notes", (req, res) => {
+router.post("./public/notes.html", (req, res) => {
   const { title, text } = req.body;
   const newNote = { title, text, id: uuidv4() };
 
@@ -45,7 +45,7 @@ router.post("/notes", (req, res) => {
 });
 
 // create delete route to delete from the DB
-router.delete("/notes/:id", (req, res) => {
+router.delete("./public/notes.html/:id", (req, res) => {
   if (req.params.id) {
     const deletedNoteId = req.params.id;
 
