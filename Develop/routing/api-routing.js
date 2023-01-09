@@ -1,66 +1,71 @@
 // Dependencies to read json
 
+const router = require("express").Router();
 const fs = require("fs");
+const { append } = require("express/lib/response");
+const path = require("path");
+const { v4: uuidv4 } = require("uuid");
+const {
+  readFromFile,
+  readAndAppend,
+  writeToFile,
+} = require("../helper/fsUtils");
 
-const uniqid = require("uniqid");
-
-module.exports = function (app) {
-  app.get("/api/notes", (req, res) => {
-    console.log("Excecute GET notes request");
-
-    let data = fs.readFileSync("./Develop/data/db.json", "utf8");
-
-    res.json(JSON.parse(data));
+// create a post route to add notes to the DB
+router.get("/notes", (req, res) => {
+  fs.readFile("./db/db.json", "utf8", (err, data) => {
+    if (data) {
+      console.log(data);
+      res.json(JSON.parse(data));
+    } else {
+      console.log(err);
+    }
   });
+});
 
-  app.post("/api/notes", (req, res) => {
-    const newNote = {
-      ...req.body,
-      id: uniqid(),
-    };
+// create a post route to add notes to the DB
+router.post("/notes", (req, res) => {
+  const { title, text } = req.body;
+  const newNote = { title, text, id: uuidv4() };
 
-    console.log("Post Request for new notes");
+  fs.readFile("./db/db.json", "utf8", (err, data) => {
+    if (err) {
+      console.error(err);
+    } else {
+      const parsedData = JSON.parse(data);
 
-    let data = fs.readFileSync("./Develop/data/db.json", "utf8");
+      parsedData.push(newNote);
 
-    const dataJSON = JSON.parse(data);
+      fs.writeFile("./db/db.json", JSON.stringify(parsedData), (err) =>
+        err ? console.error(err) : console.log("Successfully added a note!")
+      );
+      res.json(parsedData);
+    }
+  });
+});
 
-    dataJSON.push(newNote);
+// create delete route to delete from the DB
+router.delete("/notes/:id", (req, res) => {
+  if (req.params.id) {
+    const deletedNoteId = req.params.id;
 
-    fs.writeFileSync(
-      "./Develop/data/db.json",
-      JSON.stringify(dataJSON),
-      (err, text) => {
-        if (err) {
-          console.error(err);
-          return;
-        }
-        console.log("HELLO", text);
+    fs.readFile("./db/db.json", "utf8", (err, data) => {
+      if (err) {
+        console.error(err);
+      } else {
+        const parsedData = JSON.parse(data);
+
+        const filteredArray = parsedData.filter(
+          (note) => note.id !== deletedNoteId
+        );
+
+        fs.writeFile("./db/db.json", JSON.stringify(filteredArray), (err) =>
+          err ? console.error(err) : console.log("Successfully deleted a note!")
+        );
+        res.json(parsedData);
       }
-    );
+    });
+  }
+});
 
-    console.log("Success, added new note");
-
-    res.json(data);
-  });
-
-  app.delete("/api/notes/:id", (req, res) => {
-    const data = fs.readFileSync("./Develop/data/db.json", "utf8");
-
-    const dataJSON = JSON.parse(data);
-
-    const newNotes = dataJSON.filter((note) => note.id !== req.params.id);
-
-    fs.writeFile(
-      "/Develop/data/db.json",
-      JSON.stringify(newNotes),
-      (err, text) => {
-        if (err) {
-          console.error(err);
-        }
-      }
-    );
-
-    res.json(newNotes);
-  });
-};
+module.exports = router;
