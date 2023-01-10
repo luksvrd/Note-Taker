@@ -1,31 +1,10 @@
 // Dependencies to read json
-import router from "express";
-import { v4 as uuidv4 } from "uuid";
-import { readAndAppend, readFromFile } from "../helper/fsUtils.js";
+const router = require("express").Router();
+const { append } = require("express/lib/response");
+const fs = require("fs");
+const { v4: uuidv4 } = require("uuid");
 
-// GET Route for retrieving all the feedback
-router.get("/", (req, res) =>
-  readFromFile("./db/db.json").then((data) => res.json(JSON.parse(data)))
-);
-
-// POST Route for submitting feedback
-router.post("/", (req, res) => {
-  // Destructuring assignment for the items in req.body
-  const { title, text, id } = req.body;
-
-<<<<<<< HEAD
-  // If all the required properties are present
-  if (title && text && id) {
-    // Variable for the object we will save
-    const newFeedback = {
-      title,
-      text,
-      note_id: uuidv4(),
-    };
-=======
 // create a post route to add notes to the DB
-<<<<<<< HEAD
-=======
 router.get("/notes", (req, res) => {
   fs.readFile("./db/db.json", "utf8", (err, data) => {
     if (data) {
@@ -38,26 +17,24 @@ router.get("/notes", (req, res) => {
 });
 
 // create a post route to add notes to the DB
-<<<<<<< HEAD
->>>>>>> parent of 8fbdaaf (file path)
-=======
->>>>>>> parent of 8fbdaaf (file path)
 router.post("/notes", (req, res) => {
   const { title, text } = req.body;
   const newNote = { title, text, id: uuidv4() };
->>>>>>> parent of 8fbdaaf (file path)
 
-    readAndAppend(newNote, "./db/db.json");
+  fs.readFile("./db/db.json", "utf8", (err, data) => {
+    if (err) {
+      console.error(err);
+    } else {
+      const parsedData = JSON.parse(data);
 
-    const response = {
-      status: "success",
-      body: newNote,
-    };
+      parsedData.push(newNote);
 
-    res.json(response);
-  } else {
-    res.json("Error in posting note");
-  }
+      fs.writeFile("./db/db.json", JSON.stringify(parsedData), (err) =>
+        err ? console.error(err) : console.log("Successfully added a note!")
+      );
+      res.json(parsedData);
+    }
+  });
 });
 
 // create delete route to delete from the DB
