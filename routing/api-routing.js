@@ -1,11 +1,10 @@
 // Dependencies to read json
 import router from "express";
 import { v4 as uuidv4 } from "uuid";
-import { readAndAppend, readFromFile } from "../helper/fsUtils.js";
 
 // GET Route for retrieving all the feedback
 router.get("/", (req, res) =>
-  readFromFile("./db/db.json").then((data) => res.json(JSON.parse(data)))
+  getNotes("./db/db.json").then((data) => res.json(JSON.parse(data)))
 );
 
 // POST Route for submitting feedback
@@ -22,7 +21,7 @@ router.post("/", (req, res) => {
       note_id: uuidv4(),
     };
 
-    readAndAppend(newNote, "./db/db.json");
+    saveNote(newNote, "./db/db.json");
 
     const response = {
       status: "success",
@@ -59,4 +58,4 @@ router.delete("./public/notes.html/:id", (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
