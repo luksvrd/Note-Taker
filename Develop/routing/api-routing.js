@@ -24,6 +24,21 @@ router.post("/", (req, res) => {
     };
 =======
 // create a post route to add notes to the DB
+<<<<<<< HEAD
+=======
+router.get("/notes", (req, res) => {
+  fs.readFile("./db/db.json", "utf8", (err, data) => {
+    if (data) {
+      console.log(data);
+      res.json(JSON.parse(data));
+    } else {
+      console.log(err);
+    }
+  });
+});
+
+// create a post route to add notes to the DB
+>>>>>>> parent of 8fbdaaf (file path)
 router.post("/notes", (req, res) => {
   const { title, text } = req.body;
   const newNote = { title, text, id: uuidv4() };
