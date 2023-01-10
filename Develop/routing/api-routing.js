@@ -38,6 +38,9 @@ router.get("/notes", (req, res) => {
 });
 
 // create a post route to add notes to the DB
+<<<<<<< HEAD
+>>>>>>> parent of 8fbdaaf (file path)
+=======
 >>>>>>> parent of 8fbdaaf (file path)
 router.post("/notes", (req, res) => {
   const { title, text } = req.body;
