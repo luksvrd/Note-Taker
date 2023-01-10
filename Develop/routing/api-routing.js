@@ -1,47 +1,38 @@
 // Dependencies to read json
+import router from "express";
+import { v4 as uuidv4 } from "uuid";
+import { readAndAppend, readFromFile } from "../helper/fsUtils.js";
 
-const router = require("express").Router();
-const fs = require("fs");
-const { append } = require("express/lib/response");
-const path = require("path");
-const { v4: uuidv4 } = require("uuid");
-const {
-  readFromFile,
-  readAndAppend,
-  writeToFile,
-} = require("../helper/fsUtils");
+// GET Route for retrieving all the feedback
+router.get("/", (req, res) =>
+  readFromFile("./db/db.json").then((data) => res.json(JSON.parse(data)))
+);
 
-// create a post route to add notes to the DB
-router.get("/notes", (req, res) => {
-  fs.readFile("./db/db.json", "utf8", (err, data) => {
-    if (data) {
-      console.log(data);
-      res.json(JSON.parse(data));
-    } else {
-      console.log(err);
-    }
-  });
-});
+// POST Route for submitting feedback
+router.post("/", (req, res) => {
+  // Destructuring assignment for the items in req.body
+  const { title, text, id } = req.body;
 
-// create a post route to add notes to the DB
-router.post("./public/notes.html", (req, res) => {
-  const { title, text } = req.body;
-  const newNote = { title, text, id: uuidv4() };
+  // If all the required properties are present
+  if (title && text && id) {
+    // Variable for the object we will save
+    const newFeedback = {
+      title,
+      text,
+      note_id: uuidv4(),
+    };
 
-  fs.readFile("./db/db.json", "utf8", (err, data) => {
-    if (err) {
-      console.error(err);
-    } else {
-      const parsedData = JSON.parse(data);
+    readAndAppend(newNote, "./db/db.json");
 
-      parsedData.push(newNote);
+    const response = {
+      status: "success",
+      body: newNote,
+    };
 
-      fs.writeFile("./db/db.json", JSON.stringify(parsedData), (err) =>
-        err ? console.error(err) : console.log("Successfully added a note!")
-      );
-      res.json(parsedData);
-    }
-  });
+    res.json(response);
+  } else {
+    res.json("Error in posting note");
+  }
 });
 
 // create delete route to delete from the DB

@@ -1,5 +1,5 @@
-const path = require("path");
-const router = require("express").Router();
+import router from "express";
+import path from "path";
 
 // GET Route for homepage
 router.get("*", (req, res) => {
@@ -11,4 +11,4 @@ router.get("./public/notes.html", (req, res) => {
   res.sendFile(path.join(__dirname, "./public/notes.html"));
 });
 
-module.exports = router;
+export default router;

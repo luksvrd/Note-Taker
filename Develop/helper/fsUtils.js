@@ -1,5 +1,5 @@
-const fs = require("fs");
-const util = require("util");
+import fs from "fs";
+import util from "util";
 
 // Promise version of fs.readFile
 const readFromFile = util.promisify(fs.readFile);
@@ -31,4 +31,4 @@ const readAndAppend = (content, file) => {
   });
 };
 
-module.exports = { readFromFile, writeToFile, readAndAppend };
+export default { readFromFile, writeToFile, readAndAppend };
