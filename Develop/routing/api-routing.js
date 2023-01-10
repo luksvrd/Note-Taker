@@ -13,6 +13,7 @@ router.post("/", (req, res) => {
   // Destructuring assignment for the items in req.body
   const { title, text, id } = req.body;
 
+<<<<<<< HEAD
   // If all the required properties are present
   if (title && text && id) {
     // Variable for the object we will save
@@ -21,6 +22,12 @@ router.post("/", (req, res) => {
       text,
       note_id: uuidv4(),
     };
+=======
+// create a post route to add notes to the DB
+router.post("/notes", (req, res) => {
+  const { title, text } = req.body;
+  const newNote = { title, text, id: uuidv4() };
+>>>>>>> parent of 8fbdaaf (file path)
 
     readAndAppend(newNote, "./db/db.json");
 
@@ -36,7 +43,7 @@ router.post("/", (req, res) => {
 });
 
 // create delete route to delete from the DB
-router.delete("./public/notes.html/:id", (req, res) => {
+router.delete("/notes/:id", (req, res) => {
   if (req.params.id) {
     const deletedNoteId = req.params.id;
 
